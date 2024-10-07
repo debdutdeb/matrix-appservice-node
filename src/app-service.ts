@@ -1,4 +1,4 @@
-import {Application, Request, Response, default as express} from "express";
+import {Application, Request, Response, default as express, NextFunction} from "express";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import util from "util";
@@ -268,7 +268,7 @@ export class AppService extends EventEmitter {
         }
     }
 
-    private onTransaction(req: Request, res: Response) {
+    private onTransaction(req: Request, res: Response, next: NextFunction) {
         if (this.isInvalidToken(req, res)) {
             return;
         }
@@ -303,6 +303,11 @@ export class AppService extends EventEmitter {
             }
         }
         this.lastProcessedTxnId = txnId;
+
+		if (next) {
+			return next();
+		}
+
         res.send({});
     }
 
